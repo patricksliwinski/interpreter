@@ -10,7 +10,7 @@ std::vector<Token> Scanner::scanTokens() {
     scanToken();
   }
 
-  tokens.push_back(Token(TokenType::EOF_TOKEN, "", nullptr, current_line));
+  tokens.push_back(Token(TokenType::EOF_TOKEN, "", NullValue {}, current_line));
   return tokens;
 }
 
@@ -78,7 +78,7 @@ void Scanner::scanToken() {
 
 void Scanner::addToken(TokenType type) {
   std::string lexeme = source.substr(lexeme_start_character, current_character - lexeme_start_character);
-  tokens.push_back(Token(type, lexeme, nullptr, current_line));
+  tokens.push_back(Token(type, lexeme, NullValue {}, current_line));
 }
 
 void Scanner::addToken(TokenType type, Value literal) {

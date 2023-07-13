@@ -6,6 +6,8 @@
 
 #include "value.h"
 
+class LoxInterpreter;
+
 class Environment {
 public:
   
@@ -20,7 +22,12 @@ public:
 
   Environment* getEnclosing() { return enclosing; }
 
+  // Fix this to avoid raw pointers
+  //LoxInterpreter* getInterpreter() { return interpreter; }
+  //void setInterpreter(LoxInterpreter* interpreter) { this->interpreter = interpreter; }
+
 private:
   std::unordered_map<std::string, Value> values;
   Environment* enclosing;
+  //LoxInterpreter& interpreter;
 };

@@ -16,5 +16,5 @@ Value UnaryExpression::interpret(Environment& env) const {
     case TokenType::BANG:
       return !isTruthy(rightValue);
   }
-  return nullptr;
+  return NullValue {};
 }

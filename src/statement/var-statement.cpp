@@ -9,6 +9,6 @@ void VarStatement::interpret(Environment& env) const {
     auto value = initializer->interpret(env);
     env.define(name.getLexeme(), value);
   } else {
-    env.define(name.getLexeme(), nullptr);
+    env.define(name.getLexeme(), NullValue{});
   }
 }

@@ -3,6 +3,7 @@
 #include "parser.h"
 
 #include "statement/var-statement.h"
+#include "statement/function-statement.h"
 #include "statement/expression-statement.h"
 #include "statement/if-statement.h"
 #include "statement/print-statement.h"
@@ -16,6 +17,7 @@
 #include "expression/variable-expression.h"
 #include "expression/assignment-expression.h"
 #include "expression/logical-expression.h"
+#include "expression/call-expression.h"
 
 
 Parser::Parser(std::vector<Token> tokens)
@@ -31,12 +33,34 @@ std::vector<std::unique_ptr<Statement>> Parser::parse() {
 
 std::unique_ptr<Statement> Parser::parseDeclaration() {
   try {
+    if (match(TokenType::FUN)) return parseFunctionDeclaration("function");
     if (match(TokenType::VAR)) return parseVarDeclaration();
     return parseStatement();
   } catch (const std::runtime_error& error) {
     synchronize();
     return nullptr;
   }
+}
+
+std::unique_ptr<Statement> Parser::parseFunctionDeclaration(std::string kind) {
+  Token name = consume(TokenType::IDENTIFIER, "Expect " + kind + " name.");
+  consume(TokenType::LEFT_PAREN, "Expect '(' after " + kind + " name.");
+  std::vector<Token> params;
+  if (!check(TokenType::RIGHT_PAREN)) {
+    do {
+      if (params.size() >= 255) {
+        error(peek(), "Cannot have more than 255 parameters.");
+      }
+      params.push_back(consume(TokenType::IDENTIFIER, "Expect parameter name."));
+    } while (match(TokenType::COMMA));
+  }
+  consume(TokenType::RIGHT_PAREN, "Expect ')' after parameters.");
+  consume(TokenType::LEFT_BRACE, "Expect '{' before " + kind + " body.");
+  // TODO: avoid the use of release, it is not exception safe
+  auto block = dynamic_cast<BlockStatement*>(parseBlockStatement().release());
+  std::vector<std::unique_ptr<Statement>> body = block->getStatements();
+  //std::vector<std::unique_ptr<Statement>> body = dynamic_cast<BlockStatement*>(parseBlockStatement().release())->getStatements();
+  return std::make_unique<FunctionStatement>(name, std::move(params), std::move(body));
 }
 
 std::unique_ptr<Statement> Parser::parseVarDeclaration() {
@@ -59,7 +83,7 @@ std::unique_ptr<Statement> Parser::parseStatement() {
 }
 
 // It would be better to have a separate for statement
-// This follows the book example of "syntax sugar", but ends up being a bit confusing
+// This follows the book example of "syntactic sugar", but ends up being a bit confusing
 std::unique_ptr<Statement> Parser::parseForStatement() {
   consume(TokenType::LEFT_PAREN, "Expect '(' after 'for'.");
   std::unique_ptr<Statement> initializer = nullptr;
@@ -251,7 +275,21 @@ std::unique_ptr<Expression> Parser::parseUnary() {
     return std::make_unique<UnaryExpression>(operatorToken, std::move(right));
   }
 
-  return parsePrimary();
+  return parseCall();
+}
+
+std::unique_ptr<Expression> Parser::parseCall() {
+  auto expression = parsePrimary();
+
+  while (true) {
+    if (match(TokenType::LEFT_PAREN)) {
+      expression = finishCall(std::move(expression));
+    } else {
+      break;
+    }
+  }
+
+  return expression;
 }
 
 std::unique_ptr<Expression> Parser::parsePrimary() {
@@ -342,4 +380,21 @@ void Parser::synchronize() {
 
     advance();
   }
+}
+
+std::unique_ptr<Expression> Parser::finishCall(std::unique_ptr<Expression> callee) {
+  std::vector<std::unique_ptr<Expression>> arguments;
+
+  if (!check(TokenType::RIGHT_PAREN)) {
+    do {
+      if (arguments.size() >= 255) {
+        error(peek(), "Can't have more than 255 arguments.");
+      }
+      arguments.push_back(parseExpression());
+    } while (match(TokenType::COMMA));
+  }
+
+  auto paren = consume(TokenType::RIGHT_PAREN, "Expect ')' after arguments.");
+
+  return std::make_unique<CallExpression>(std::move(callee), paren, std::move(arguments));
 }

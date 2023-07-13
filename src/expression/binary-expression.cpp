@@ -25,10 +25,10 @@ Value BinaryExpression::interpret(Environment& env) const {
       return std::get<double>(leftValue) <= std::get<double>(rightValue);
     case TokenType::BANG_EQUAL:
       checkNumberOperator(operatorToken, leftValue, rightValue);
-      return leftValue != rightValue;
+      return std::get<double>(leftValue) != std::get<double>(rightValue);
     case TokenType::EQUAL_EQUAL:
       checkNumberOperator(operatorToken, leftValue, rightValue);
-      return leftValue == rightValue;
+      return std::get<double>(leftValue) == std::get<double>(rightValue);
     case TokenType::MINUS:
       checkNumberOperator(operatorToken, leftValue, rightValue);
       return std::get<double>(leftValue) - std::get<double>(rightValue);
@@ -47,5 +47,5 @@ Value BinaryExpression::interpret(Environment& env) const {
       }
       throw RuntimeError("Operands must be numbers or strings");
   }
-  return nullptr;
+  return NullValue();
 }

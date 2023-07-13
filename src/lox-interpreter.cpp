@@ -6,6 +6,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "native/time.h"
+
 bool LoxInterpreter::hadError = false;
 
 void LoxInterpreter::runFile(std::string filename) {
@@ -45,6 +47,8 @@ void LoxInterpreter::run(std::string source) {
 }
 
 void LoxInterpreter::interpret(std::vector<std::unique_ptr<Statement>>& statements) {
+  CallableValue timeCallable {std::make_shared<Time>()};
+  environment.define("time", timeCallable);
   try {
     for (const auto& statement : statements) {
       statement->interpret(environment);

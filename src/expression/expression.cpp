@@ -1,7 +1,7 @@
 #include "expression/expression.h"
 
 bool Expression::isTruthy(Value literal) const {
-  if (std::holds_alternative<std::nullptr_t>(literal)) {
+  if (std::holds_alternative<NullValue>(literal)) {
     return false;
   } else if (std::holds_alternative<bool>(literal)) {
     return std::get<bool>(literal);

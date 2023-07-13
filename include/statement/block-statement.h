@@ -8,7 +8,7 @@ public:
   BlockStatement(std::vector<std::unique_ptr<Statement>> statements);
 
   // TODO: best way to pass vector of unique_ptr?
-  const std::vector<std::unique_ptr<Statement>>& getStatements() const { return statements; };
+  std::vector<std::unique_ptr<Statement>> getStatements() { return std::move(statements); };
   void interpret(Environment& env) const override;
 
 private:

@@ -18,6 +18,7 @@ private:
   };
 
   std::unique_ptr<Statement> parseDeclaration();
+  std::unique_ptr<Statement> parseFunctionDeclaration(std::string kind);
   std::unique_ptr<Statement> parseVarDeclaration();
 
   std::unique_ptr<Statement> parseStatement();
@@ -37,7 +38,10 @@ private:
   std::unique_ptr<Expression> parseTerm();
   std::unique_ptr<Expression> parseFactor();
   std::unique_ptr<Expression> parseUnary();
+  std::unique_ptr<Expression> parseCall();
   std::unique_ptr<Expression> parsePrimary();
+
+  std::unique_ptr<Expression> finishCall(std::unique_ptr<Expression> callee);
 
   template<typename... Args>
   bool match(Args... args);

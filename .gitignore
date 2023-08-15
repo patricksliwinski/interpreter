@@ -40,4 +40,12 @@
 # Built Visual Studio Code Extensions
 *.vsix
 
+# CMake
 build/
+CMakeFiles/
+CMakeCache.txt
+*.cmake
+*.tcl
+Makefile
+
+

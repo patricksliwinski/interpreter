@@ -7,7 +7,7 @@
 
 int main(int argc, char *argv[]) {
   LoxInterpreter interpreter;
-  interpreter.runFile("/home/patrick/lox-interpreter/test_functions.lox");
+  interpreter.runFile("/home/patrick/interpreter/test.lox");
   // if (argc > 2) {
   //   std::printf("Usage: jlox [script]\n");
   //   return 64;

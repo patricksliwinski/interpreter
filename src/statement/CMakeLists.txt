@@ -10,4 +10,5 @@ target_sources(interpreter
   statement/block-statement.cpp
   statement/if-statement.cpp
   statement/while-statement.cpp
+  statement/function-statement.cpp
 )

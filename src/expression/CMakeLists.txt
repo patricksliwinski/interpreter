@@ -12,4 +12,5 @@ target_sources(interpreter
   expression/variable-expression.cpp
   expression/assignment-expression.cpp
   expression/logical-expression.cpp
+  expression/call-expression.cpp
 )

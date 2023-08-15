@@ -9,6 +9,7 @@ target_include_directories(interpreter
 
 add_subdirectory(expression)
 add_subdirectory(statement)
+add_subdirectory(native)
 
 target_sources(interpreter
     PUBLIC
@@ -20,4 +21,5 @@ target_sources(interpreter
         literal.cpp
         value.cpp
         environment.cpp
+        function.cpp
 )
